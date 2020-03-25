@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "removeComments": false,
+        "sourceMap": true,
+        "inlineSources": true,
+        // "out": "output/jsstore.js",
+        "target": "es5",
+        "preserveConstEnums": true,
+        "declaration": true,
+        "module": "es6",
+        "outDir": "../dist/ts",
+        "lib": [
+            "es2015",
+            "dom",
+            "webworker"
+        ]
+    },
+    "exclude": [
+        "node_namespaces",
+        "output"
+    ]
+}

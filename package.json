@@ -1,0 +1,31 @@
+{
+  "name": "shivneri-ws-client-javascript",
+  "version": "1.0.0",
+  "description": "Shivneri framework web socket client library for javascript",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "webpack --config webpack/webpack.dev.config.js",
+    "buildpack": "",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ujjwalguptaofficial/shivneri-ws-client-javascript.git"
+  },
+  "author": "Ujjwal Gupta",
+  "license": "APACHE 2.0",
+  "bugs": {
+    "url": "https://github.com/ujjwalguptaofficial/shivneri-ws-client-javascript/issues"
+  },
+  "homepage": "https://github.com/ujjwalguptaofficial/shivneri-ws-client-javascript#readme",
+  "devDependencies": {
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-merge": "^4.2.2"
+  }
+}

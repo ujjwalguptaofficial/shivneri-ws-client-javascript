@@ -1,0 +1,12 @@
+#################
+## Directories
+#################
+
+node_modules/
+.nuxt/
+output/
+build/
+bin/
+
+#definition
+!dist/src
