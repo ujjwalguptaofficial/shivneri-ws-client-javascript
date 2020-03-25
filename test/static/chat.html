@@ -11,6 +11,7 @@
 <body>
     <input type="text" id="input">
     <button onclick="sendMessage()">Send</button>
+    <button onclick="disconnect()">DisConnect</button>
     <div id="output">
 
     </div>
@@ -19,6 +20,10 @@
         var wsUri = "ws://localhost:4000/chat/";
         var output, websocket;
 
+        function disconnect() {
+            websocket.close();
+        }
+
         async function init() {
             output = document.getElementById("output");
             websocket = await shivneriWsClient.init("localhost:4000/chat/");
@@ -26,9 +31,12 @@
             websocket.server.on("receiveMessage", function (message) {
                 writeToScreen('<span style="color: blue;">Received: ' + message + '</span>');
             });
-            // websocket.onerror = function (evt) {
-            //     onError(evt)
-            // };
+            websocket.onError = function (evt) {
+                onError(evt)
+            };
+            websocket.onDisconnected = function () {
+                writeToScreen('<span style="color: red;">DisConnected</span>')
+            }
         }
 
         function sendMessage() {
