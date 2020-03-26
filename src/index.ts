@@ -1,5 +1,5 @@
 import { ERROR_TYPE } from "./enums/index";
-import { removeLastSlash } from "./helpers/index";
+import { removeLastSlash, convertMessage } from "./helpers/index";
 import { IMessageFromServer, IOption } from "./interfaces/index";
 
 
@@ -42,7 +42,7 @@ class Server {
     emit(eventName: string, data) {
         data = {
             dataType: typeof data,
-            data: data,
+            data: data || null,
             eventName: eventName
         }
         webSocket.send(JSON.stringify(data));
@@ -68,6 +68,7 @@ class SocketConnection {
     onDisconnected = function () {
 
     }
+
 }
 
 
@@ -87,7 +88,6 @@ function waitForPong() {
 function establishWebSocketConnection(res, rej) {
     webSocket = new WebSocket("ws://" + inputUrl);
     const socketConnection = SocketConnection.instance;
-    // websocket.
     webSocket.onopen = (evt) => {
         isConnectionEstablished = true;
         socketConnection.onConnected();
@@ -101,7 +101,9 @@ function establishWebSocketConnection(res, rej) {
     webSocket.onmessage = (evt) => {
         const message: IMessageFromServer = JSON.parse(evt.data);
         if (socketConnection.server.eventStore[message.event_name]) {
-            socketConnection.server.eventStore[message.event_name](message.data);
+            socketConnection.server.eventStore[message.event_name](
+                convertMessage(message)
+            );
         }
         else {
             switch (message.event_name) {
@@ -109,9 +111,21 @@ function establishWebSocketConnection(res, rej) {
                     clearTimeout(pongTimer);
                     sendPing();
                     break;
+                case "ping":
+                    Server.instance.emit("pong", "pong");
+                    break;
+                case "error":
+                    socketConnection.onError({
+                        data: message.data
+                    });
             }
         }
     };
     webSocket.onerror = socketConnection.onError;
+
+    // window.addEventListener('online', () => );
+    window.addEventListener('offline', () => {
+        socketConnection.close();
+    });
 }
 
