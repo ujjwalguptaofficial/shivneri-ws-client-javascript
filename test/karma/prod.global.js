@@ -1,0 +1,1 @@
+var isRuningForProduction = true;

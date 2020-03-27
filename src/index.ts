@@ -1,9 +1,8 @@
 import { ERROR_TYPE } from "./enums/index";
-import { removeLastSlash, convertMessage } from "./helpers/index";
+import { removeLastSlash, convertMessage, getError } from "./helpers/index";
 import { IMessageFromServer, IOption } from "./interfaces/index";
 
 
-let isConnectionEstablished = false;
 let inputUrl: string;
 let webSocket: WebSocket;
 let pongTimer: number;
@@ -16,15 +15,17 @@ let webSocketOption: IOption = {
 export function init(url: string, option: IOption) {
     Object.assign(webSocketOption, option);
     inputUrl = removeLastSlash(url);
-    return new Promise(function (res, rej) {
+    return new Promise((res, rej) => {
         fetch(`http://${inputUrl}/info`).then(response => {
             if (response.ok) {
                 establishWebSocketConnection(res, rej);
             }
             else {
-                rej(this.getError(ERROR_TYPE.InvalidUrl));
+                rej(getError(ERROR_TYPE.InvalidUrl, url));
             }
-        })
+        }).catch(err => {
+            rej(getError(ERROR_TYPE.InvalidUrl, url));
+        });
     });
 }
 
@@ -50,6 +51,8 @@ class Server {
 }
 
 class SocketConnection {
+
+    isConnectionEstablished = false;
     static instance = new SocketConnection();
     server = Server.instance;
 
@@ -89,13 +92,13 @@ function establishWebSocketConnection(res, rej) {
     webSocket = new WebSocket("ws://" + inputUrl);
     const socketConnection = SocketConnection.instance;
     webSocket.onopen = (evt) => {
-        isConnectionEstablished = true;
+        socketConnection.isConnectionEstablished = true;
         socketConnection.onConnected();
         res(socketConnection);
         sendPing();
     };
     webSocket.onclose = (evt) => {
-        isConnectionEstablished = false;
+        socketConnection.isConnectionEstablished = false;
         socketConnection.onDisconnected();
     };
     webSocket.onmessage = (evt) => {
