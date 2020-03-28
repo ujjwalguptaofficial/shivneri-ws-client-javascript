@@ -10,7 +10,8 @@
     "build": "webpack --config webpack/webpack.dev.config.js",
     "buildpack": "",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:dev": "karma start test/karma/karma.config.dev.js"
+    "test:dev": "karma start test/karma/karma.config.dev.js",
+    "start": "cd server && crystal src/chat.cr"
   },
   "repository": {
     "type": "git",

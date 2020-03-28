@@ -53,6 +53,14 @@ describe("initiate database", function () {
         }, 100);
     })
 
+    it("send number message", (done) => {
+        const message = "Hey";
+        websocket.server.emit("receive_string_message", message);
+        setTimeout(() => {
+            expect(lastMessage).to.be.an('string').equal(message);
+            done();
+        }, 100);
+    })
 
 })
 
