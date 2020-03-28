@@ -32,14 +32,14 @@
             }
 
             writeToScreen("CONNECTED");
-            websocket.server.on("receiveMessage", function (message) {
+            websocket.on("receiveMessage", function (message) {
                 writeToScreen('<span style="color: blue;">Received: ' + message + '</span>');
             });
-            websocket.server.on("receiveJsonMessage", function (message) {
+            websocket.on("receiveJsonMessage", function (message) {
                 writeToScreen('<span style="color: blue;">Received: ' + JSON.stringify(message) +
                     '</span>');
             });
-            websocket.server.on("groupMessage", function (message) {
+            websocket.on("groupMessage", function (message) {
                 writeToScreen('<span style="color: #65c81b;">Received from group: ' + message + '</span>');
             });
             websocket.onError = function (evt) {
@@ -55,13 +55,13 @@
         }
 
         function join() {
-            websocket.server.emit("join_room", "test")
+            websocket.emit("join_room", "test")
         }
 
         function sendMessageToGroup() {
             var message = document.getElementById("input").value;
             writeToScreen('<span style="color: green;">SENT: ' + message + '</span>');
-            websocket.server.emit("receive_message_from_group", {
+            websocket.emit("receive_message_from_group", {
                 group_name: "test",
                 data: message
             })
@@ -71,9 +71,9 @@
             // debugger
             var message = document.getElementById("input").value;
             writeToScreen('<span style="color: green;">SENT: ' + message + '</span>');
-            websocket.server.emit("receive_string_message", message)
-            websocket.server.emit("receive_number_message", 123456)
-            websocket.server.emit("receive_json_message", {
+            websocket.emit("receive_string_message", message)
+            websocket.emit("receive_number_message", 123456)
+            websocket.emit("receive_json_message", {
                 hello: 'world'
             })
         }

@@ -29,32 +29,17 @@ export function init(url: string, option: IOption) {
     });
 }
 
-class Server {
-    static instance = new Server();
-    eventStore = {};
-    on(event: string, callback: (data) => void) {
-        if (typeof callback != "function") {
-            console.warn(`invalid event handler for event ${event}`)
-            return;
-        }
-        this.eventStore[event] = callback;
-    }
+// class Server {
+//     static instance = new Server();
 
-    emit(eventName: string, data) {
-        data = {
-            dataType: typeof data,
-            data: data || null,
-            eventName: eventName
-        }
-        webSocket.send(JSON.stringify(data));
-    }
-}
+// }
 
 class SocketConnection {
 
-    isConnectionEstablished = false;
+    isConnected = false;
     static instance = new SocketConnection();
-    server = Server.instance;
+
+    eventStore = {};
 
     close() {
         webSocket.close();
@@ -72,12 +57,30 @@ class SocketConnection {
 
     }
 
+
+    on(event: string, callback: (data) => void) {
+        if (typeof callback != "function") {
+            console.warn(`invalid event handler for event ${event}`)
+            return;
+        }
+        this.eventStore[event] = callback;
+    }
+
+    emit(eventName: string, data) {
+        data = {
+            dataType: typeof data,
+            data: data || null,
+            eventName: eventName
+        }
+        webSocket.send(JSON.stringify(data));
+    }
+
 }
 
 
 function sendPing() {
     setTimeout(() => {
-        Server.instance.emit("ping", "ping");
+        SocketConnection.instance.emit("ping", "ping");
         waitForPong();
     }, webSocketOption.pingInterval);
 }
@@ -92,19 +95,19 @@ function establishWebSocketConnection(res, rej) {
     webSocket = new WebSocket("ws://" + inputUrl);
     const socketConnection = SocketConnection.instance;
     webSocket.onopen = (evt) => {
-        socketConnection.isConnectionEstablished = true;
+        socketConnection.isConnected = true;
         socketConnection.onConnected();
         res(socketConnection);
         sendPing();
     };
     webSocket.onclose = (evt) => {
-        socketConnection.isConnectionEstablished = false;
+        socketConnection.isConnected = false;
         socketConnection.onDisconnected();
     };
     webSocket.onmessage = (evt) => {
         const message: IMessageFromServer = JSON.parse(evt.data);
-        if (socketConnection.server.eventStore[message.event_name]) {
-            socketConnection.server.eventStore[message.event_name](
+        if (socketConnection.eventStore[message.event_name]) {
+            socketConnection.eventStore[message.event_name](
                 convertMessage(message)
             );
         }
@@ -115,7 +118,7 @@ function establishWebSocketConnection(res, rej) {
                     sendPing();
                     break;
                 case "ping":
-                    Server.instance.emit("pong", "pong");
+                    socketConnection.emit("pong", "pong");
                     break;
                 case "error":
                     socketConnection.onError({
