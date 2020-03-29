@@ -1,8 +1,9 @@
 {
-  "name": "shivneri-ws-client-javascript",
+  "name": "shivneri-ws-client",
   "version": "1.0.0",
   "description": "Shivneri framework web socket client library for javascript",
-  "main": "index.js",
+  "main": "dist/shivneri-ws-client.commonjs2.js",
+  "types": "dist/ts/index.d.ts",
   "directories": {
     "test": "test"
   },
@@ -17,7 +18,8 @@
     "karma:prod": "karma start test/karma/karma.config.prod.js",
     "test:dev": "node test/runner.js karma:dev",
     "test:prod": "node test/runner.js karma:prod",
-    "start": "cd server && crystal src/chat.cr"
+    "start": "cd server && crystal src/chat.cr",
+    "deploy": "npm run test && npm run move:deploy_file"
   },
   "repository": {
     "type": "git",
@@ -42,6 +44,7 @@
     "karma-sauce-launcher": "^1.2.0",
     "mocha": "^4.1.0",
     "puppeteer": "^2.1.1",
+    "smart-banner-webpack-plugin": "^3.0.1",
     "ts-loader": "^6.2.2",
     "typescript": "^3.8.3",
     "webpack": "^4.42.1",
