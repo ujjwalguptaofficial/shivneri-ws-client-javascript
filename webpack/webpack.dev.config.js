@@ -4,10 +4,10 @@ const merge = require('webpack-merge');
 
 const libraryTarget = [{
     type: "var",
-    name: `shivneri-ws_client.js`
+    name: `shivneri-ws-client.js`
 }, {
     type: "commonjs2",
-    name: `shivneri-ws_client.commonjs2.js`
+    name: `shivneri-ws-client.commonjs2.js`
 }];
 
 function getConfigForTaget(target) {

@@ -8,11 +8,15 @@
   },
   "scripts": {
     "webpack:dev": "webpack --config webpack/webpack.dev.config.js",
+    "webpack:prod": "webpack --config webpack/webpack.prod.config.js",
     "build:dev": "npm run webpack:dev && npm run test:dev",
+    "build:prod": "npm run webpack:prod && npm run test:prod",
     "buildpack": "",
-    "test": "npm run build:dev",
+    "test": "npm run build:dev && npm run build:prod",
     "karma:dev": "karma start test/karma/karma.config.dev.js",
-    "test:dev": "node test/runner.js",
+    "karma:prod": "karma start test/karma/karma.config.prod.js",
+    "test:dev": "node test/runner.js karma:dev",
+    "test:prod": "node test/runner.js karma:prod",
     "start": "cd server && crystal src/chat.cr"
   },
   "repository": {

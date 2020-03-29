@@ -9,7 +9,7 @@ module.exports = function (config) {
                 timeout: 10000
             }
         },
-        files: ['build/shivneri-ws_client.js',
+        files: ['build/shivneri-ws-client.js',
             ...files.list_of_files
         ],
         proxies: {

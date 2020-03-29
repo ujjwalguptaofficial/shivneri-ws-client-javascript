@@ -6,11 +6,11 @@ module.exports = function (config) {
         frameworks: ['mocha', 'chai'],
         client: {
             mocha: {
-                timeout: 60000
+                timeout: 10000
             }
         },
-        files: ['test/karma/prod.global.js', 'build/jsstore.min.js', 'build/jsstore.worker.min.js',
-            'build/jsstore.worker.ie.min.js', ...files.list_of_files
+        files: ['build/shivneri-ws-client.min.js',
+            ...files.list_of_files
         ],
         proxies: {
             '/test/': '/base/test/',
