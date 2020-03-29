@@ -1,3 +1,4 @@
 export declare enum ERROR_TYPE {
-    InvalidUrl = "invalid_url"
+    InvalidUrl = "invalid_url",
+    NoUrlProvided = "no_url_provided"
 }

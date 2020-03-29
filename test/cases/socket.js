@@ -12,20 +12,27 @@ describe("initiate database", function () {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
     }
 
-    it("connect to socket without socket server start", (done) => {
-        shivneriWsClient.init("localhost:9000/chat/").then(done).catch(err => {
-            console.log("hit catch")
-            expect(err).to.eql({
+    it("connect to socket without socket server start", async () => {
+        websocket = new shivneriWsClient.Instance("localhost:9000/chat/");
+        try {
+            await websocket.init()
+        } catch (error) {
+            console.log("hit catch", error)
+            expect(error).to.be.an("object").eql({
                 type: "invalid_url",
                 message: "invalid web socket url localhost:9000/chat/"
             })
-            done();
-        });
+        }
+        //    .then(done).catch(error => {
+
+        //         done();
+        //     });
     })
 
     it("connect to socket", async () => {
         // startServer();
-        websocket = await shivneriWsClient.init("localhost:5000/chat/");
+        websocket = new shivneriWsClient.Instance("localhost:5000/chat/")
+        await websocket.init();
         expect(websocket.isConnected).to.be.an('boolean').equal(true);
         websocket.on("receiveMessage", function (message) {
             lastMessage = message;

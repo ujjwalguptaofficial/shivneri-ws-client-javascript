@@ -6,7 +6,7 @@ module.exports = function (config) {
         frameworks: ['mocha', 'chai'],
         client: {
             mocha: {
-                timeout: 60000
+                timeout: 10000
             }
         },
         files: ['build/shivneri-ws_client.js',

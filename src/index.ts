@@ -2,47 +2,47 @@ import { ERROR_TYPE } from "./enums/index";
 import { removeLastSlash, convertMessage, getError } from "./helpers/index";
 import { IMessageFromServer, IOption } from "./interfaces/index";
 
-
-let inputUrl: string;
-let webSocket: WebSocket;
-let pongTimer: number;
-
-let webSocketOption: IOption = {
-    pingInterval: 5000,
-    pingTimeout: 5000
-}
-
-export function init(url: string, option: IOption) {
-    Object.assign(webSocketOption, option);
-    inputUrl = removeLastSlash(url);
-    return new Promise((res, rej) => {
-        fetch(`http://${inputUrl}/info`).then(response => {
-            if (response.ok) {
-                establishWebSocketConnection(res, rej);
-            }
-            else {
-                rej(getError(ERROR_TYPE.InvalidUrl, url));
-            }
-        }).catch(err => {
-            rej(getError(ERROR_TYPE.InvalidUrl, url));
-        });
-    });
-}
-
-// class Server {
-//     static instance = new Server();
-
-// }
-
-class SocketConnection {
-
+export class Instance {
+    socketUrl: string;
+    inputUrl: string;
+    webSocket: WebSocket;
+    pongTimer: number;
+    option: IOption = {
+        pingInterval: 5000,
+        pingTimeout: 5000
+    };
     isConnected = false;
-    static instance = new SocketConnection();
+
+    constructor(url: string) {
+        this.inputUrl = url;
+        if (url) {
+            this.socketUrl = removeLastSlash(url);
+        }
+        else {
+            throw getError(ERROR_TYPE.NoUrlProvided);
+        }
+    }
+
+    init(option: IOption) {
+        Object.assign(this.option, option);
+        return new Promise((res, rej) => {
+            fetch(`http://${this.socketUrl}/info`).then(response => {
+                if (response.ok) {
+                    this.establishWebSocketConnection().then(res).catch(rej);
+                }
+                else {
+                    rej(getError(ERROR_TYPE.InvalidUrl, this.socketUrl));
+                }
+            }).catch(err => {
+                rej(getError(ERROR_TYPE.InvalidUrl, this.inputUrl));
+            });
+        });
+    }
 
     eventStore = {};
 
     close() {
-        webSocket.close();
+        this.webSocket.close();
     }
 
     onError = function (error) {
@@ -72,66 +72,72 @@ class SocketConnection {
             data: data || null,
             eventName: eventName
         }
-        webSocket.send(JSON.stringify(data));
+        this.webSocket.send(JSON.stringify(data));
+    }
+
+    sendPing() {
+        setTimeout(() => {
+            this.emit("ping", "ping");
+            this.waitForPong();
+        }, this.option.pingInterval);
+    }
+
+    waitForPong() {
+        this.pongTimer = setTimeout(() => {
+            this.close();
+        }, this.option.pingTimeout);
+    }
+
+    establishWebSocketConnection() {
+        return new Promise((res) => {
+            this.webSocket = new WebSocket("ws://" + this.socketUrl);
+            this.webSocket.onopen = (evt) => {
+                this.isConnected = true;
+                this.onConnected();
+                res();
+                this.sendPing();
+            };
+            this.webSocket.onclose = (evt) => {
+                this.isConnected = false;
+                window.removeEventListener('offline', this.onOffline);
+                this.onDisconnected();
+            };
+            this.webSocket.onmessage = (evt) => {
+                const message: IMessageFromServer = JSON.parse(evt.data);
+                if (this.eventStore[message.event_name]) {
+                    this.eventStore[message.event_name](
+                        convertMessage(message)
+                    );
+                }
+                else {
+                    switch (message.event_name) {
+                        case "pong":
+                            clearTimeout(this.pongTimer);
+                            this.sendPing();
+                            break;
+                        case "ping":
+                            this.emit("pong", "pong");
+                            break;
+                        case "error":
+                            this.onError({
+                                data: message.data
+                            });
+                    }
+                }
+            };
+            this.webSocket.onerror = this.onError;
+
+            window.addEventListener('offline', this.onOffline);
+        })
+
+    }
+
+    onOffline() {
+        this.close()
     }
 
 }
 
 
-function sendPing() {
-    setTimeout(() => {
-        SocketConnection.instance.emit("ping", "ping");
-        waitForPong();
-    }, webSocketOption.pingInterval);
-}
 
-function waitForPong() {
-    pongTimer = setTimeout(() => {
-        SocketConnection.instance.close();
-    }, webSocketOption.pingTimeout);
-}
-
-function establishWebSocketConnection(res, rej) {
-    webSocket = new WebSocket("ws://" + inputUrl);
-    const socketConnection = SocketConnection.instance;
-    webSocket.onopen = (evt) => {
-        socketConnection.isConnected = true;
-        socketConnection.onConnected();
-        res(socketConnection);
-        sendPing();
-    };
-    webSocket.onclose = (evt) => {
-        socketConnection.isConnected = false;
-        socketConnection.onDisconnected();
-    };
-    webSocket.onmessage = (evt) => {
-        const message: IMessageFromServer = JSON.parse(evt.data);
-        if (socketConnection.eventStore[message.event_name]) {
-            socketConnection.eventStore[message.event_name](
-                convertMessage(message)
-            );
-        }
-        else {
-            switch (message.event_name) {
-                case "pong":
-                    clearTimeout(pongTimer);
-                    sendPing();
-                    break;
-                case "ping":
-                    socketConnection.emit("pong", "pong");
-                    break;
-                case "error":
-                    socketConnection.onError({
-                        data: message.data
-                    });
-            }
-        }
-    };
-    webSocket.onerror = socketConnection.onError;
-
-    // window.addEventListener('online', () => );
-    window.addEventListener('offline', () => {
-        socketConnection.close();
-    });
-}
 

@@ -26,28 +26,30 @@
         async function init() {
             output = document.getElementById("output");
             try {
-                websocket = await shivneriWsClient.init("localhost:4000/chat/");
+                websocket = new shivneriWsClient.Instance("localhost:4000/chat/");
+                await websocket.init();
             } catch (error) {
-                websocket = await shivneriWsClient.init("localhost:5000/chat/");
+                console.error(error);
+                // websocket = await shivneriWsClient.init("localhost:5000/chat/");
             }
 
-            writeToScreen("CONNECTED");
-            websocket.on("receiveMessage", function (message) {
-                writeToScreen('<span style="color: blue;">Received: ' + message + '</span>');
-            });
-            websocket.on("receiveJsonMessage", function (message) {
-                writeToScreen('<span style="color: blue;">Received: ' + JSON.stringify(message) +
-                    '</span>');
-            });
-            websocket.on("groupMessage", function (message) {
-                writeToScreen('<span style="color: #65c81b;">Received from group: ' + message + '</span>');
-            });
-            websocket.onError = function (evt) {
-                onError(evt)
-            };
-            websocket.onDisconnected = function () {
-                writeToScreen('<span style="color: red;">DisConnected</span>')
-            }
+            // writeToScreen("CONNECTED");
+            // websocket.on("receiveMessage", function (message) {
+            //     writeToScreen('<span style="color: blue;">Received: ' + message + '</span>');
+            // });
+            // websocket.on("receiveJsonMessage", function (message) {
+            //     writeToScreen('<span style="color: blue;">Received: ' + JSON.stringify(message) +
+            //         '</span>');
+            // });
+            // websocket.on("groupMessage", function (message) {
+            //     writeToScreen('<span style="color: #65c81b;">Received from group: ' + message + '</span>');
+            // });
+            // websocket.onError = function (evt) {
+            //     onError(evt)
+            // };
+            // websocket.onDisconnected = function () {
+            //     writeToScreen('<span style="color: red;">DisConnected</span>')
+            // }
         }
 
         function disconnect() {

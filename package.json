@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "build": "webpack --config webpack/webpack.dev.config.js",
+    "webpack:dev": "webpack --config webpack/webpack.dev.config.js",
+    "build:dev": "npm run webpack:dev && npm run test:dev",
     "buildpack": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "karma:dev": "karma start test/karma/karma.config.dev.js",

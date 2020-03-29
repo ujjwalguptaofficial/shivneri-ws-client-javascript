@@ -5,6 +5,8 @@ export function getError(err: ERROR_TYPE, payload?) {
         switch (err) {
             case ERROR_TYPE.InvalidUrl:
                 return `invalid web socket url ${payload}`;
+            case ERROR_TYPE.NoUrlProvided:
+                return `provide url in constructor`;
         }
     }
 
