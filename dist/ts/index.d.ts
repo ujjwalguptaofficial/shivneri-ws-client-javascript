@@ -6,9 +6,8 @@ export declare class Instance {
     pongTimer: number;
     option: IOption;
     isConnected: boolean;
-    constructor(url: string);
     get state(): number;
-    init(option: IOption): Promise<unknown>;
+    init(url: string, option: IOption): Promise<unknown>;
     eventStore: {};
     close(message: string): Promise<unknown>;
     onError: (error: any) => void;

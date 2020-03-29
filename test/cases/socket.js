@@ -11,9 +11,9 @@ describe("initiate database", function () {
 
 
     it("connect to socket without socket server start", async () => {
-        websocket = new shivneriWsClient.Instance("localhost:9000/chat/");
+        websocket = new shivneriWsClient.Instance();
         try {
-            await websocket.init()
+            await websocket.init("localhost:9000/chat/")
         } catch (error) {
             console.log("hit catch", error)
             expect(error).to.be.an("object").eql({
@@ -29,7 +29,7 @@ describe("initiate database", function () {
 
     it("connect to socket", async () => {
         // startServer();
-        websocket = new shivneriWsClient.Instance("localhost:5000/chat/")
+        websocket = new shivneriWsClient.Instance()
         websocket.on("receiveMessage", function (message) {
             lastMessage = message;
         });
@@ -44,7 +44,7 @@ describe("initiate database", function () {
         websocket.onConnected = function () {
             isConnected = true;
         }
-        await websocket.init();
+        await websocket.init("localhost:5000/chat/");
         expect(websocket.isConnected).to.be.an('boolean').equal(true);
         expect(isConnected).to.be.an('boolean').equal(true);
         await promiseTimeout(50);
@@ -122,7 +122,7 @@ describe("initiate database", function () {
     it("connect to socket as new client", async () => {
         // startServer();
         let messageFromServer, groupMessageFromServer
-        const websocket2 = new shivneriWsClient.Instance("localhost:5000/chat/");
+        const websocket2 = new shivneriWsClient.Instance();
         websocket2.on("receiveMessage", function (message) {
             messageFromServer = message;
         });
@@ -132,7 +132,7 @@ describe("initiate database", function () {
         websocket2.onError = function (err) {
             console.error("websocket2", err);
         }
-        await websocket2.init();
+        await websocket2.init("localhost:5000/chat/");
         expect(websocket2.isConnected).to.be.an('boolean').equal(true);
         await promiseTimeout(10);
         expect(messageFromServer).equal("You are connected");

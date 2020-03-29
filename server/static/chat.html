@@ -26,11 +26,11 @@
         async function init() {
             output = document.getElementById("output");
             try {
-                websocket = new shivneriWsClient.Instance("localhost:4000/chat/");
-                await websocket.init();
+                websocket = new shivneriWsClient.Instance();
+                await websocket.init("localhost:4000/chat/");
             } catch (error) {
                 console.error(error);
-                // websocket = await shivneriWsClient.init("localhost:5000/chat/");
+                await websocket.init("localhost:5000/chat/");
             }
 
             writeToScreen("CONNECTED");

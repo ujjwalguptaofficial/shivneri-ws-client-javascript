@@ -1,4 +1,4 @@
-import { ERROR_TYPE } from "./enums/index";
+import { ERROR_TYPE, CONNECTION_STATE } from "./enums/index";
 import { removeLastSlash, convertMessage, getError } from "./helpers/index";
 import { IMessageFromServer, IOption } from "./interfaces/index";
 
@@ -13,7 +13,13 @@ export class Instance {
     };
     isConnected = false;
 
-    constructor(url: string) {
+
+
+    get state() {
+        return this.webSocket.readyState
+    }
+
+    init(url: string, option: IOption) {
         this.inputUrl = url;
         if (url) {
             this.socketUrl = removeLastSlash(url);
@@ -21,14 +27,6 @@ export class Instance {
         else {
             throw getError(ERROR_TYPE.NoUrlProvided);
         }
-    }
-
-
-    get state() {
-        return this.webSocket.readyState
-    }
-
-    init(option: IOption) {
         Object.assign(this.option, option);
         return new Promise((res, rej) => {
             fetch(`http://${this.socketUrl}/info`).then(response => {
@@ -95,14 +93,13 @@ export class Instance {
             data: data || null,
             eventName: eventName
         }
-        if (this.isConnected === true) {
-            this.webSocket.send(JSON.stringify(data));
-        }
+
+        this.webSocket.send(JSON.stringify(data));
     }
 
     sendPing() {
         setTimeout(() => {
-            if (this.isConnected === true) {
+            if (this.state === CONNECTION_STATE.OPEN) {
                 this.emit("ping", "ping");
                 this.waitForPong();
             }
