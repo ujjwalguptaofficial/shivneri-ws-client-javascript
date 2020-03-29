@@ -72,7 +72,7 @@
             var message = document.getElementById("input").value;
             writeToScreen('<span style="color: green;">SENT: ' + message + '</span>');
             websocket.emit("receive_string_message", message)
-            websocket.emit("receive_number_message", 123456)
+            websocket.emit("receive_number_message", 'as')
             websocket.emit("receive_json_message", {
                 hello: 'world'
             })

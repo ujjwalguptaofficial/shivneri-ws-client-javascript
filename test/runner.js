@@ -73,13 +73,16 @@ async function startServer() {
     serverCommand.run();
 }
 
-async function startTest() {
+function startTest() {
     console.log("starting test");
-    await new CommandRunner("npm run test:dev").run();
-    if (serverCommand) {
-        serverCommand.quit()
-    }
+    setTimeout(async () => {
+        await new CommandRunner("npm run karma:dev").run();
+        if (serverCommand) {
+            serverCommand.quit()
+        }
+    }, 10000);
+
 }
 
-// startServer();
+startServer();
 startTest();

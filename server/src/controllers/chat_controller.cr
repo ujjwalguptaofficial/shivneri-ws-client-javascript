@@ -32,12 +32,12 @@ module Chat
 
       @[Event]
       def receive_number_message(message)
-        clients.current.emit("receiveMessage", 12345)
+        clients.current.emit("receiveMessage", message)
       end
 
       @[Event]
       def receive_json_message(message)
-        clients.current.emit("receiveJsonMessage", message)
+        clients.current.emit("receiveMessage", message)
       end
 
       @[Event]
