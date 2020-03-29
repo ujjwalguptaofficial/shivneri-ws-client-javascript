@@ -19,7 +19,7 @@
     "test:dev": "node test/runner.js karma:dev",
     "test:prod": "node test/runner.js karma:prod",
     "start": "cd server && crystal src/chat.cr",
-    "deploy": "npm run test && npm run move:deploy_file"
+    "deploy": "npm run test && node deployer.js"
   },
   "repository": {
     "type": "git",
