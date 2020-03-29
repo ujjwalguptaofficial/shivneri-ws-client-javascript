@@ -12,6 +12,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    container:
+      image: crystallang/crystal
 
     strategy:
       matrix:
@@ -19,10 +21,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Setup project with Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm run test
+        run: npm install
+    - name: Setup crystal 
+      run: cd server && shards install
+    - name: Run test
+      run: npm run test
       env:
         CI: true
