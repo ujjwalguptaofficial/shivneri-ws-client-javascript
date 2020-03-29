@@ -112,22 +112,35 @@ describe("initiate database", function () {
         }, 100);
     })
 
-    // it("connect to socket as new client", async () => {
-    //     // startServer();
-    //     let messageFromServer, groupMessageFromServer
-    //     const websocket2 = await shivneriWsClient.init("localhost:5000/chat/");
-    //     expect(websocket2.isConnected).to.be.an('boolean').equal(true);
-    //     websocket2.on("receiveMessage", function (message) {
-    //         messageFromServer = message;
-    //     });
-    //     websocket2.on("groupMessage", function (message) {
-    //         groupMessageFromServer = message;
-    //     });
-    //     websocket2.emit("join_group", "test");
-    //     await promiseTimeout(100);
-    //     // expect(messageFromServer).to.be.an('string').equal("Welcome to group test");
-    //     expect(lastGroupMessage).to.equal("New member has joined")
-    // })
+    it("connect to socket as new client", async () => {
+        // startServer();
+        let messageFromServer, groupMessageFromServer
+        const websocket2 = new shivneriWsClient.Instance("localhost:5000/chat/");
+        websocket2.on("receiveMessage", function (message) {
+            messageFromServer = message;
+        });
+        websocket2.on("groupMessage", function (message) {
+            groupMessageFromServer = message;
+        });
+        websocket2.onError = function (err) {
+            console.error("websocket2", err);
+        }
+        await websocket2.init();
+        expect(websocket2.isConnected).to.be.an('boolean').equal(true);
+
+        websocket2.emit("join_room", "test");
+        await promiseTimeout(100);
+        // expect(messageFromServer).to.be.an('string').equal("Welcome to group test");
+        expect(lastGroupMessage).to.equal("New member has joined")
+        const message = "hey i love you"
+        websocket2.emit("receive_message_from_group", {
+            group_name: "test",
+            data: message
+        })
+        await promiseTimeout(100);
+        expect(lastGroupMessage).to.equal(message);
+        expect(groupMessageFromServer).to.equal(message);
+    })
 
 })
 
