@@ -7,9 +7,10 @@ export declare class Instance {
     option: IOption;
     isConnected: boolean;
     constructor(url: string);
+    get state(): number;
     init(option: IOption): Promise<unknown>;
     eventStore: {};
-    close(): void;
+    close(message: string): Promise<unknown>;
     onError: (error: any) => void;
     onConnected: () => void;
     onDisconnected: () => void;

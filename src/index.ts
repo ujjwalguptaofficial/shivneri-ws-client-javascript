@@ -23,6 +23,11 @@ export class Instance {
         }
     }
 
+
+    get state() {
+        return this.webSocket.readyState
+    }
+
     init(option: IOption) {
         Object.assign(this.option, option);
         return new Promise((res, rej) => {
@@ -41,17 +46,17 @@ export class Instance {
 
     eventStore = {};
 
-    close() {
+    close(message: string) {
         return new Promise((res) => {
             if (this.isConnected) {
-                this.webSocket.close();
+                this.webSocket.close(1000, message || "Manually closing");
                 const checkForClose = () => {
                     setTimeout(() => {
                         if (this.isConnected) {
-                            res();
+                            checkForClose();
                         }
                         else {
-                            checkForClose();
+                            res();
                         }
                     }, 100);
                 }
@@ -106,7 +111,7 @@ export class Instance {
 
     waitForPong() {
         this.pongTimer = setTimeout(() => {
-            this.close();
+            this.close("pong not received within speified time");
         }, this.option.pingTimeout);
     }
 
@@ -155,7 +160,7 @@ export class Instance {
     }
 
     onOffline() {
-        this.close()
+        this.close("offline detected")
     }
 
 }
