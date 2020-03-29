@@ -25,7 +25,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        run: npm install
+    - name: Install node modules
+      run: npm install
     - name: Setup crystal 
       run: cd server && shards install
     - name: Run test
