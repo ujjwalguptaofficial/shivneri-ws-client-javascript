@@ -8,8 +8,8 @@ export class Instance {
     webSocket: WebSocket;
     pongTimer: number;
     option: IOption = {
-        pingInterval: 5000,
-        pingTimeout: 5000
+        pingInterval: 10000,
+        pingTimeout: 10000
     };
     isConnected = false;
 
@@ -42,7 +42,25 @@ export class Instance {
     eventStore = {};
 
     close() {
-        this.webSocket.close();
+        return new Promise((res) => {
+            if (this.isConnected) {
+                this.webSocket.close();
+                const checkForClose = () => {
+                    setTimeout(() => {
+                        if (this.isConnected) {
+                            res();
+                        }
+                        else {
+                            checkForClose();
+                        }
+                    }, 100);
+                }
+                checkForClose();
+            }
+            else {
+                res();
+            }
+        })
     }
 
     onError = function (error) {
@@ -72,13 +90,17 @@ export class Instance {
             data: data || null,
             eventName: eventName
         }
-        this.webSocket.send(JSON.stringify(data));
+        if (this.isConnected === true) {
+            this.webSocket.send(JSON.stringify(data));
+        }
     }
 
     sendPing() {
         setTimeout(() => {
-            this.emit("ping", "ping");
-            this.waitForPong();
+            if (this.isConnected === true) {
+                this.emit("ping", "ping");
+                this.waitForPong();
+            }
         }, this.option.pingInterval);
     }
 

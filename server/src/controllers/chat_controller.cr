@@ -1,7 +1,10 @@
 module Chat
   module Controller
     class ChatController < Shivneri::WebSocketController
+      @groups = [] of String
+
       def connected
+        clients.current.emit("receiveMessage", "You are connected")
         puts "Socket connected"
       end
 
@@ -17,6 +20,7 @@ module Chat
         puts "size before except me #{clients.groups[room_name].size}"
         clients.groups.except_me(room_name).emit("groupMessage", "New member has joined")
         puts "size #{clients.groups[room_name].size}"
+        @groups.push room_name
       end
 
       @[Event]
@@ -47,6 +51,9 @@ module Chat
 
       def disconnected
         puts "Socket disconnected"
+        @groups.each do |value|
+          clients.groups[value].emit("groupMessage", "someone left")
+        end
       end
     end
   end

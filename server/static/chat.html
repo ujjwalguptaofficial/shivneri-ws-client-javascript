@@ -33,23 +33,23 @@
                 // websocket = await shivneriWsClient.init("localhost:5000/chat/");
             }
 
-            // writeToScreen("CONNECTED");
-            // websocket.on("receiveMessage", function (message) {
-            //     writeToScreen('<span style="color: blue;">Received: ' + message + '</span>');
-            // });
-            // websocket.on("receiveJsonMessage", function (message) {
-            //     writeToScreen('<span style="color: blue;">Received: ' + JSON.stringify(message) +
-            //         '</span>');
-            // });
-            // websocket.on("groupMessage", function (message) {
-            //     writeToScreen('<span style="color: #65c81b;">Received from group: ' + message + '</span>');
-            // });
-            // websocket.onError = function (evt) {
-            //     onError(evt)
-            // };
-            // websocket.onDisconnected = function () {
-            //     writeToScreen('<span style="color: red;">DisConnected</span>')
-            // }
+            writeToScreen("CONNECTED");
+            websocket.on("receiveMessage", function (message) {
+                writeToScreen('<span style="color: blue;">Received: ' + message + '</span>');
+            });
+            websocket.on("receiveJsonMessage", function (message) {
+                writeToScreen('<span style="color: blue;">Received: ' + JSON.stringify(message) +
+                    '</span>');
+            });
+            websocket.on("groupMessage", function (message) {
+                writeToScreen('<span style="color: #65c81b;">Received from group: ' + message + '</span>');
+            });
+            websocket.onError = function (evt) {
+                onError(evt)
+            };
+            websocket.onDisconnected = function () {
+                writeToScreen('<span style="color: red;">DisConnected</span>')
+            }
         }
 
         function disconnect() {

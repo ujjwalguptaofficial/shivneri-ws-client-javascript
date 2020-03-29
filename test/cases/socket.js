@@ -2,15 +2,13 @@
 describe("initiate database", function () {
 
     var websocket;
-    var lastMessage, errMessage, lastGroupMessage
+    var lastMessage, errMessage, lastGroupMessage, isConnected = false
 
     function onError(evt) {
         errMessage = evt.data
     }
 
-    function onDisconnected(evt) {
-        writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-    }
+
 
     it("connect to socket without socket server start", async () => {
         websocket = new shivneriWsClient.Instance("localhost:9000/chat/");
@@ -32,8 +30,6 @@ describe("initiate database", function () {
     it("connect to socket", async () => {
         // startServer();
         websocket = new shivneriWsClient.Instance("localhost:5000/chat/")
-        await websocket.init();
-        expect(websocket.isConnected).to.be.an('boolean').equal(true);
         websocket.on("receiveMessage", function (message) {
             lastMessage = message;
         });
@@ -41,7 +37,18 @@ describe("initiate database", function () {
             lastGroupMessage = message;
         });
         websocket.onError = onError
-        websocket.onDisconnected = onDisconnected
+        websocket.onDisconnected = function () {
+            debugger;
+            isConnected = false
+        }
+        websocket.onConnected = function () {
+            isConnected = true;
+        }
+        await websocket.init();
+        expect(websocket.isConnected).to.be.an('boolean').equal(true);
+        expect(isConnected).to.be.an('boolean').equal(true);
+        await promiseTimeout(50);
+        expect(lastMessage).equal("You are connected");
         // done();
     })
 
@@ -127,19 +134,36 @@ describe("initiate database", function () {
         }
         await websocket2.init();
         expect(websocket2.isConnected).to.be.an('boolean').equal(true);
-
+        await promiseTimeout(10);
+        expect(messageFromServer).equal("You are connected");
         websocket2.emit("join_room", "test");
         await promiseTimeout(100);
         // expect(messageFromServer).to.be.an('string').equal("Welcome to group test");
         expect(lastGroupMessage).to.equal("New member has joined")
-        const message = "hey i love you"
+        let message = "hey i love you"
         websocket2.emit("receive_message_from_group", {
             group_name: "test",
             data: message
         })
-        await promiseTimeout(100);
+        await promiseTimeout(50);
         expect(lastGroupMessage).to.equal(message);
         expect(groupMessageFromServer).to.equal(message);
+        lastGroupMessage = null;
+        await websocket.close();
+        await promiseTimeout(10);
+        expect(groupMessageFromServer).to.equal("someone left")
+        message = "yo test"
+        websocket2.emit("receive_message_from_group", {
+            group_name: "test",
+            data: message
+        })
+        await promiseTimeout(200);
+        expect(groupMessageFromServer).to.equal(message)
+    })
+
+    it("check for web socket close", (done) => {
+        // expect(websocket.isConnected).to.be.an('boolean').equal(false);
+        expect(isConnected).to.be.an('boolean').equal(false);
     })
 
 })
