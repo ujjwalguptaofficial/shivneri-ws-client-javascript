@@ -1,5 +1,5 @@
 /*!
- * @license :shivneri-ws-client - V1.0.0 - 29/03/2020
+ * @license :shivneri-ws-client - V1.0.0 - 31/03/2020
  * https://github.com/ujjwalguptaofficial/shivneri-ws-client-javascript
  * Copyright (c) 2020 @Ujjwal Gupta; Licensed APACHE 2.0
  */

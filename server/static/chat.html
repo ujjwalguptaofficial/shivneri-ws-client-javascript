@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="build/shivneri-ws_client.js"></script>
+    <script src="build/shivneri-ws-client.js"></script>
 </head>
 
 <body>
@@ -14,6 +14,8 @@
     <button onclick="sendMessageToGroup()">SendToGrop</button>
     <button onclick="disconnect()">DisConnect</button>
     <button onclick="join()">Join Group</button>
+    <button onclick="broadcast()">Broadcast</button>
+    <button onclick="broadcastExceptMe()">Broadcast Except me</button>
     <div id="output">
 
     </div>
@@ -56,6 +58,19 @@
 
         function join() {
             websocket.emit("join-room", "test")
+        }
+
+        function broadcast() {
+            var message = document.getElementById("input").value;
+            writeToScreen('<span style="color: green;">SENT: ' + message + '</span>');
+            websocket.emit("broadcast", message)
+        }
+
+
+        function broadcastExceptMe() {
+            var message = document.getElementById("input").value;
+            writeToScreen('<span style="color: green;">SENT: ' + message + '</span>');
+            websocket.emit("broadcast_except_me", message)
         }
 
         function sendMessageToGroup() {
