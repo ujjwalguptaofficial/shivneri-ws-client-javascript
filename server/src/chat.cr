@@ -15,8 +15,7 @@ module Chat
   Shivneri.routes = routes
   path_of_static_folder = File.join(Dir.current, "static")
   puts "static folder path #{path_of_static_folder}"
-  app_option = AppOption.new
-  app_option.folders = [{
+  Shivneri.folders = [{
     path_alias: "build",
     path:       File.join(Dir.current, "../build"),
   }, {
@@ -24,8 +23,8 @@ module Chat
     path:       path_of_static_folder,
   }]
   Shivneri.port = 5000
-  Shivneri.open app_option do
+  Shivneri.open ->{
     puts "app is started"
-  end
+  }
   Shivneri.walls = [Wall::CorsWall]
 end

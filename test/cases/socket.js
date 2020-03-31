@@ -102,7 +102,7 @@ describe("initiate database", function () {
     })
 
     it("join room test", (done) => {
-        websocket.emit("join_room", "test");
+        websocket.emit("join-room", "test");
         setTimeout(() => {
             expect(lastMessage).to.be.an('string').equal("Welcome to group test");
             lastMessage = null;
@@ -111,7 +111,7 @@ describe("initiate database", function () {
     })
 
     it("join room demo", (done) => {
-        websocket.emit("join_room", "demo");
+        websocket.emit("join-room", "demo");
         setTimeout(() => {
             expect(lastMessage).to.be.an('string').equal("Welcome to group demo");
             lastMessage = null;
@@ -136,7 +136,7 @@ describe("initiate database", function () {
         expect(websocket2.isConnected).to.be.an('boolean').equal(true);
         await promiseTimeout(10);
         expect(messageFromServer).equal("You are connected");
-        websocket2.emit("join_room", "test");
+        websocket2.emit("join-room", "test");
         await promiseTimeout(100);
         // expect(messageFromServer).to.be.an('string').equal("Welcome to group test");
         expect(lastGroupMessage).to.equal("New member has joined")
@@ -157,7 +157,7 @@ describe("initiate database", function () {
             group_name: "test",
             data: message
         })
-        await promiseTimeout(200);
+        await promiseTimeout(500);
         expect(groupMessageFromServer).to.equal(message)
     })
 
